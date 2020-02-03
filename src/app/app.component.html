@@ -1,21 +1,136 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<div class="container">
+  <div class="container-fluid">
+    <h1>Reactive Registration Form</h1>
 
-<router-outlet></router-outlet>
+    {{registrationForm.value | json}}
+    <hr>
+
+    <form [formGroup]="registrationForm"
+          (ngSubmit)="onSubmit()">
+
+      <div class="form-group">
+        <label for="">Username</label>
+        <input formControlName="userName" type="text" 
+               [class.is-invalid]="registrationForm.get('userName').invalid &&
+                                   registrationForm.get('userName').touched"       
+        class="form-control">
+        <!-- <small class="text-danger"
+               [class.d-none]="registrationForm.get('userName').valid ||
+                               registrationForm.get('userName').untouched"
+          >Username is required!
+        </small> -->
+        <!-- <div *ngIf="registrationForm.get('userName').invalid &&
+                    registrationForm.get('userName').touched">
+          <small class="text-danger"
+                 *ngIf="registrationForm.get('userName').errors?.required"
+            >Username is required!
+          </small>
+          <small class="text-danger"
+                 *ngIf="registrationForm.get('userName').errors?.minlength"
+            >Username must be at least 3 characters! Now You have entered {{registrationForm.get('userName').value.length}}
+          </small>
+        </div> -->
+        <div *ngIf="userName.invalid &&
+                    userName.touched">
+          <small class="text-danger"
+                 *ngIf="userName.errors?.required"
+            >Username is required!
+          </small>
+          <small class="text-danger"
+                 *ngIf="userName.errors?.minlength"
+            >Username must be at least 3 characters! Now You have entered {{registrationForm.get('userName').value.length}}
+          </small>
+          <small class="text-danger"
+                 *ngIf="userName.errors?.forbiddenName"
+            >Sorry, Username 
+            <strong>
+                "{{userName.errors?.forbiddenName.value}}"
+            </strong> not allowed! 
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+          <label for="">Email</label>
+          <button class="btn btn-secondary btn-sm m-2" 
+                  type="button"
+                  (click)="addAlternateEmail()"
+            >Add email
+          </button>
+          <input [class.is-invalid]="email.invalid && email.touched"
+                 formControlName="email" type="email" text="" class="form-control">
+          <small class="text-danger"
+                 [class.d-none]="email.valid || email.untouched"
+            >Email is required!
+          </small>
+          <div formArrayName="alternateEmails" *ngFor="let email of alternateEmails.controls; let i = index">
+            <input type="text" 
+                   class="form-control mt-2"
+                   [formControlName]="i"
+            >
+          </div>
+      </div>
+
+      <div class="form-check mb-3">
+        <input formControlName="subscribe" type="checkbox" class="form-check-input">
+        <label class="form-check-label">
+          Send me promotional offers
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label for="">Password</label>
+        <input formControlName="password" type="password" class="form-control">
+        <!-- <small class="text-danger"
+               *ngIf="registrationForm.errors?.misMatch"
+          >Passwords do not match!
+        </small> -->
+      </div>
+
+      <div class="form-group">
+        <label for="">Confirm Password</label>
+        <input [class.is-invalid]="registrationForm.errors?.misMatch" formControlName="confirmPassword" type="password" class="form-control">
+        <small class="text-danger"
+               *ngIf="registrationForm.errors?.misMatch"
+          >Passwords do not match!
+        </small>
+      </div>
+
+      <div formGroupName="adress">
+          <div class="form-group">
+              <label for="">City</label>
+              <input formControlName="city" type="text" class="form-control">
+            </div>
+      
+            <div class="form-group">
+              <label for="">State</label>
+              <input formControlName="state" type="text" class="form-control">
+            </div>
+      
+            <div class="form-group">
+              <label for="">Postal Code</label>
+              <input formControlName="postalCode" type="text" class="form-control">
+            </div>
+      </div>
+
+
+      <button [disabled]="!registrationForm.valid" type="submit" class="btn btn-primary">
+        Register
+      </button>
+
+      <button class="btn btn-secondary ml-2" 
+              type="button"
+              (click)="loadApiData()"
+        >Load API Data
+      </button>
+
+      <button class="btn btn-secondary ml-2" 
+              type="button"
+              (click)="patchApiData()"
+        >Patch API Data
+      </button>
+    </form>
+    
+  </div>
+  <router-outlet></router-outlet>
+</div>
